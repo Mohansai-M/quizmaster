@@ -19,16 +19,18 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include"
       });
 
       const data = await res.json();
       setLoading(false);
 
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.push("/dashboard"), 1000);
-      } else {
+     
+       if (res.ok) {
+  setMessage("Login successful! Redirecting...");
+  setTimeout(() => router.replace("/takeQuiz"), 1000);
+}
+      else {
         setMessage(data.error || "Invalid credentials");
       }
     } catch (err) {

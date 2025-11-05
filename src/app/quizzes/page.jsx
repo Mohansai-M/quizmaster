@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 export default function QuizesPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [question, setQuestion] = useState("");
+  const [questionType, setQuestionType] = useState("mcq");
   const [options, setOptions] = useState("");
   const [answer, setAnswer] = useState("");
 
-
+  // Load all quizzes
   useEffect(() => {
     fetch("/api/quizes")
       .then((res) => res.json())
@@ -15,18 +16,27 @@ export default function QuizesPage() {
       .catch(console.error);
   }, []);
 
-
   async function addQuiz(e) {
     e.preventDefault();
+
+    let payload = {
+      question,
+      type: questionType,
+      answer,
+    };
+
+    if (questionType === "mcq") {
+      payload.options = options.split(",").map((opt) => opt.trim());
+    } else if (questionType === "truefalse") {
+      payload.options = ["True", "False"];
+    }
+
     const res = await fetch("/api/quizes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        question,
-        options: options.split(",").map((opt) => opt.trim()),
-        answer,
-      }),
+      body: JSON.stringify(payload),
     });
+
     if (res.ok) {
       alert("Quiz added!");
       setQuestion("");
@@ -40,7 +50,7 @@ export default function QuizesPage() {
   }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-8 bg-gray-50 text-black">
       <h1 className="text-2xl font-bold mb-6 text-center">QuizMaster Admin</h1>
 
       <form
@@ -55,20 +65,42 @@ export default function QuizesPage() {
           className="border p-2 w-full mb-2 rounded"
           required
         />
-        <input
-          type="text"
-          placeholder="Options (comma separated)"
-          value={options}
-          onChange={(e) => setOptions(e.target.value)}
+
+        <select
+          value={questionType}
+          onChange={(e) => setQuestionType(e.target.value)}
           className="border p-2 w-full mb-2 rounded"
-        />
+        >
+          <option value="mcq">Multiple Choice</option>
+          <option value="truefalse">True / False</option>
+          <option value="text">Text Based</option>
+        </select>
+
+        {questionType === "mcq" && (
+          <input
+            type="text"
+            placeholder="Options (comma separated)"
+            value={options}
+            onChange={(e) => setOptions(e.target.value)}
+            className="border p-2 w-full mb-2 rounded"
+          />
+        )}
+
+        {questionType === "truefalse" && (
+          <p className="text-gray-600 mb-2 text-sm">
+            Options will be automatically set to <b>True / False</b>
+          </p>
+        )}
+
         <input
           type="text"
           placeholder="Correct answer"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           className="border p-2 w-full mb-2 rounded"
+          required
         />
+
         <button
           type="submit"
           className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
@@ -86,14 +118,15 @@ export default function QuizesPage() {
               className="p-3 bg-white shadow-sm border rounded-lg"
             >
               <p className="font-medium">{q.question}</p>
-              {q.options && (
+              <p className="text-sm text-gray-500 italic">({q.type})</p>
+              {q.options && q.options.length > 0 && (
                 <ul className="list-disc ml-5 text-gray-600">
                   {q.options.map((opt, i) => (
                     <li key={i}>{opt}</li>
                   ))}
                 </ul>
               )}
-              <p className="text-sm text-green-600 mt-1"> {q.answer}</p>
+              <p className="text-sm text-green-600 mt-1">Correct: {q.answer}</p>
             </li>
           ))}
         </ul>

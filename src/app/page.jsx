@@ -14,7 +14,7 @@ export default function HomePage() {
           Take a Quiz
         </Link>
         <Link
-          href="/quizes"
+          href="/quizzes"
           className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
         >
           Admin Panel
