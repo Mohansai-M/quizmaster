@@ -8,7 +8,7 @@ export default function HomePage() {
       </h1>
       <div className="flex gap-6">
         <Link
-          href="/take-quiz"
+          href="/takeQuiz"
           className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
         >
           Take a Quiz
