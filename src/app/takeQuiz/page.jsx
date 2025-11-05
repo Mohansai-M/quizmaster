@@ -13,7 +13,7 @@ export default function TakeQuizPage() {
       .then(setQuizzes)
       .catch(console.error);
   }, []);
-
+console.log(quizzes)
   function handleSelect(qid, option) {
     setAnswers((prev) => ({ ...prev, [qid]: option }));
   }

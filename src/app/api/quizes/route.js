@@ -2,37 +2,15 @@ import { NextResponse } from "next/server";
 import { getDB } from "../../../lib/mongo";
 import jwt from "jsonwebtoken";
 
-/**
- * GET: Fetch all quiz questions (flattened)
- */
+
 export async function GET() {
   try {
     const db = await getDB();
-    const quizzes = await db
-      .collection("quiz_master_collection")
-      .find({})
-      .toArray();
-
-    // Flatten all quiz questions across quizzes
-    const questions = quizzes.flatMap(
-      (quiz) =>
-        quiz.questions?.map((q) => ({
-          _id: q._id?.toString() || `${quiz._id}_${q.question}`,
-          question: q.question,
-          type: q.type,
-          options: q.options || [],
-          answer: q.answer,
-          quizTitle: quiz.title,
-        })) || []
-    );
-
-    return NextResponse.json(questions);
+    const quizzes = await db.collection("quiz_master_collection").find({}).toArray();
+    return NextResponse.json(quizzes);
   } catch (error) {
     console.error("Error fetching quizzes:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch quizzes" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch quizzes" }, { status: 500 });
   }
 }
 

@@ -27,7 +27,7 @@ export default function QuizesPage() {
 
     if (questionType === "mcq") {
       payload.options = options.split(",").map((opt) => opt.trim());
-    } else if (questionType === "truefalse") {
+    } else if (questionType === "boolean") {
       payload.options = ["True", "False"];
     }
 
@@ -72,7 +72,7 @@ export default function QuizesPage() {
           className="border p-2 w-full mb-2 rounded"
         >
           <option value="mcq">Multiple Choice</option>
-          <option value="truefalse">True / False</option>
+          <option value="boolean">True / False</option>
           <option value="text">Text Based</option>
         </select>
 
@@ -86,7 +86,7 @@ export default function QuizesPage() {
           />
         )}
 
-        {questionType === "truefalse" && (
+        {questionType === "boolean" && (
           <p className="text-gray-600 mb-2 text-sm">
             Options will be automatically set to <b>True / False</b>
           </p>
